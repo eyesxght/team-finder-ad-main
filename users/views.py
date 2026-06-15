@@ -16,66 +16,65 @@ FILTERS = [
 
 
 def register_view(request):
-    if request.method == 'POST':
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('projects:list')
-    else:
-        form = RegisterForm()
+    """Страница регистрации."""
+    form = RegisterForm(request.POST or None)
+    if form.is_valid():
+        user = form.save()
+        login(request, user)
+        return redirect('projects:list')
     return render(request, 'users/register.html', {'form': form})
 
 
 def login_view(request):
-    if request.method == 'POST':
-        form = EmailAuthenticationForm(request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('projects:list')
-    else:
-        form = EmailAuthenticationForm()
+    """Страница входа."""
+    form = EmailAuthenticationForm(request.POST or None)
+    if form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        return redirect('projects:list')
     return render(request, 'users/login.html', {'form': form})
 
 
 def logout_view(request):
+    """Выход из аккаунта."""
     logout(request)
     return redirect('projects:list')
 
 
 @login_required
 def edit_profile_view(request):
-    if request.method == 'POST':
-        form = EditProfileForm(request.POST, request.FILES, instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('users:detail', pk=request.user.pk)
-    else:
-        form = EditProfileForm(instance=request.user)
+    """Редактирование профиля."""
+    form = EditProfileForm(
+        request.POST or None,
+        request.FILES or None,
+        instance=request.user,
+    )
+    if form.is_valid():
+        form.save()
+        return redirect('users:detail', pk=request.user.pk)
     return render(request, 'users/edit_profile.html', {'form': form})
 
 
 @login_required
 def change_password_view(request):
-    if request.method == 'POST':
-        form = ChangePasswordForm(request.user, request.POST)
-        if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)
-            return redirect('users:detail', pk=request.user.pk)
-    else:
-        form = ChangePasswordForm(request.user)
+    """Смена пароля."""
+    form = ChangePasswordForm(request.user, request.POST or None)
+    if form.is_valid():
+        user = form.save()
+        update_session_auth_hash(request, user)
+        return redirect('users:detail', pk=request.user.pk)
     return render(request, 'users/change_password.html', {'form': form})
 
 
 def user_detail_view(request, pk):
+    """Страница пользователя."""
     user = get_object_or_404(User, pk=pk)
     return render(request, 'users/user-details.html', {'user': user})
 
 
 def participants_view(request):
-    users_qs = User.objects.order_by('id')
+    """Страница всех пользователей с фильтрацией."""
+    users_qs = User.objects.order_by('name')
     selected_filter = request.GET.get('filter')
 
     if selected_filter and request.user.is_authenticated:
