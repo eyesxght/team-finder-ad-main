@@ -61,7 +61,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', unique=True)
     name = models.CharField('Имя', max_length=USER_NAME_MAX_LENGTH)
     surname = models.CharField('Фамилия', max_length=USER_SURNAME_MAX_LENGTH)
-    avatar = models.ImageField('Аватар', upload_to='avatars/')
+    avatar = models.ImageField('Аватар', upload_to='avatars/', blank=True)
     phone = models.CharField('Телефон', max_length=USER_PHONE_MAX_LENGTH, unique=True)
     github_url = models.URLField('Github', blank=True)
     about = models.TextField('О себе', blank=True, max_length=USER_ABOUT_MAX_LENGTH)

@@ -30,7 +30,7 @@ class Project(models.Model):
         default=ProjectStatus.OPEN,
     )
     created_at = models.DateTimeField('Дата создания', auto_now_add=True)
-
+    github_url = models.URLField('Ссылка на Github', blank=True) 
     class Meta:
         verbose_name = 'Проект'
         verbose_name_plural = 'Проекты'
