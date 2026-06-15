@@ -2,17 +2,14 @@ from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import ChangePasswordForm, EditProfileForm, EmailAuthenticationForm, RegisterForm
+from .forms import (
+    ChangePasswordForm,
+    EditProfileForm,
+    EmailAuthenticationForm,
+    RegisterForm,
+)
 from .models import User
-from projects.services import get_paginated_queryset
-
-
-FILTERS = [
-    'favorited_authors',
-    'authors_i_participate',
-    'liked_my_projects',
-    'my_participants',
-]
+from .services import get_paginated_queryset
 
 
 def register_view(request):
@@ -22,6 +19,7 @@ def register_view(request):
         user = form.save()
         login(request, user)
         return redirect('projects:list')
+
     return render(request, 'users/register.html', {'form': form})
 
 
@@ -32,6 +30,7 @@ def login_view(request):
         user = form.get_user()
         login(request, user)
         return redirect('projects:list')
+
     return render(request, 'users/login.html', {'form': form})
 
 
@@ -52,6 +51,7 @@ def edit_profile_view(request):
     if form.is_valid():
         form.save()
         return redirect('users:detail', pk=request.user.pk)
+
     return render(request, 'users/edit_profile.html', {'form': form})
 
 
@@ -63,6 +63,7 @@ def change_password_view(request):
         user = form.save()
         update_session_auth_hash(request, user)
         return redirect('users:detail', pk=request.user.pk)
+
     return render(request, 'users/change_password.html', {'form': form})
 
 
@@ -72,9 +73,17 @@ def user_detail_view(request, pk):
     return render(request, 'users/user-details.html', {'user': user})
 
 
+FILTERS = [
+    'favorited_authors',
+    'authors_i_participate',
+    'liked_my_projects',
+    'my_participants',
+]
+
+
 def participants_view(request):
     """Страница всех пользователей с фильтрацией."""
-    users_qs = User.objects.order_by('name')
+    users_qs = User.objects.order_by('-date_joined')
     selected_filter = request.GET.get('filter')
 
     if selected_filter and request.user.is_authenticated:
@@ -94,6 +103,7 @@ def participants_view(request):
             selected_filter = None
 
     page_obj = get_paginated_queryset(users_qs, request)
+
     return render(request, 'users/participants.html', {
         'participants': page_obj,
         'active_filter': FILTERS,

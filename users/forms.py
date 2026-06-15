@@ -1,10 +1,10 @@
-from django.contrib.auth import authenticate
 from django import forms
+from django.contrib.auth import authenticate
 from django.contrib.auth.forms import PasswordChangeForm
 from django.core.exceptions import ValidationError
 
 from .models import User
-from .validators import validate_github_url, normalize_phone
+from .validators import normalize_phone, validate_github_url
 
 
 class RegisterForm(forms.ModelForm):
@@ -36,11 +36,13 @@ class EmailAuthenticationForm(forms.Form):
         cleaned_data = super().clean()
         email = cleaned_data.get('email')
         password = cleaned_data.get('password')
+
         if email and password:
             user = authenticate(username=email, password=password)
             if user is None:
                 raise forms.ValidationError('Неверный имейл или пароль')
             self.user = user
+
         return cleaned_data
 
     def get_user(self):
@@ -56,6 +58,7 @@ class EditProfileForm(forms.ModelForm):
         phone = self.cleaned_data.get('phone')
         if not phone:
             raise ValidationError('Телефон обязателен')
+
         normalized = normalize_phone(phone)
         qs = User.objects.filter(phone=normalized)
         if self.instance and self.instance.pk:

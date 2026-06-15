@@ -1,9 +1,11 @@
 import re
 from urllib.parse import urlparse
+
 from django.core.exceptions import ValidationError
 
 
 def validate_github_url(value):
+    """Проверяет, что ссылка ведёт на GitHub."""
     if not value:
         return
     parsed = urlparse(value)
@@ -12,6 +14,7 @@ def validate_github_url(value):
 
 
 def normalize_phone(value):
+    """Нормализует номер телефона к формату +7XXXXXXXXXX."""
     value = value.strip()
     if re.fullmatch(r'\+7\d{10}', value):
         return value

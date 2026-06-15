@@ -6,16 +6,16 @@ from django.core.files.base import ContentFile
 from django.db import models
 from PIL import Image, ImageDraw, ImageFont
 
-from .managers import UserManager
-from projects.constants import (
+from .constants import (
     AVATAR_COLORS,
-    AVATAR_SIZE,
     AVATAR_FONT_SIZE,
-    USER_NAME_MAX_LENGTH,
-    USER_SURNAME_MAX_LENGTH,
-    USER_PHONE_MAX_LENGTH,
+    AVATAR_SIZE,
     USER_ABOUT_MAX_LENGTH,
+    USER_NAME_MAX_LENGTH,
+    USER_PHONE_MAX_LENGTH,
+    USER_SURNAME_MAX_LENGTH,
 )
+from .managers import UserManager
 
 
 def generate_avatar(name):
@@ -39,7 +39,6 @@ def generate_avatar(name):
             continue
 
     if font is None:
-        # load_default принимает size начиная с Pillow 10+
         try:
             font = ImageFont.load_default(size=AVATAR_FONT_SIZE)
         except TypeError:
@@ -62,8 +61,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField('email address', unique=True)
     name = models.CharField('Имя', max_length=USER_NAME_MAX_LENGTH)
     surname = models.CharField('Фамилия', max_length=USER_SURNAME_MAX_LENGTH)
-    avatar = models.ImageField('Аватар', upload_to='avatars/', blank=True)
-    phone = models.CharField('Телефон', max_length=USER_PHONE_MAX_LENGTH, unique=True, blank=True)
+    avatar = models.ImageField('Аватар', upload_to='avatars/')
+    phone = models.CharField('Телефон', max_length=USER_PHONE_MAX_LENGTH, unique=True)
     github_url = models.URLField('Github', blank=True)
     about = models.TextField('О себе', blank=True, max_length=USER_ABOUT_MAX_LENGTH)
     date_joined = models.DateTimeField('Дата регистрации', auto_now_add=True)

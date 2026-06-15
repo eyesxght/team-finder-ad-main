@@ -29,8 +29,8 @@
 ### 1. Клонировать репозиторий
 
 ```bash
-git clone https://github.com/eyesxght/team123.git
-cd team123
+git clone https://github.com/eyesxght/team-finder-ad-main.git
+cd team-finder-ad-main
 ```
 
 ### 2. Создать и активировать виртуальное окружение
